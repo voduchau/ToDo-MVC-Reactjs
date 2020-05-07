@@ -18,9 +18,9 @@ class SearchBar extends React.Component {
         return (
             <>
             <form onSubmit={this.handleSubmit}>
-                <div className="ui category search">
+                <div className="ui category search" style={{textAlign: "center"}}>
                     <div className="ui icon input">
-                        <input className="prompt" value={this.props.name} onChange={this.handleChange} type="text" placeholder="Search animals..." />
+                        <input className="prompt" value={this.props.name} onChange={this.handleChange} type="text" placeholder="Add to do" style={{width: 500, margin:10}}/>
                         <i className="search icon"></i>
                     </div>
                     <div className="results"></div>

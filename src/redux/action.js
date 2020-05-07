@@ -16,13 +16,24 @@ export const AddItem = (data) => {
 export const ChangeStatus = (item) => {
     return async (dispatch) => {
         const res = await axios.put(`/listItems/${item.id}`,{...item, status: !item.status})
-        console.log(res.data,'x')
         dispatch({
             type: "CHANGE",
             payload: res.data
         })
     }
    
+}
+
+export const UpdateItem = (item,value) => {
+    console.log(value,"update trong action")
+    return async (dispatch) => {
+        const res = await axios.put(`/listItems/${item.id}`,{...item,title: value})
+        console.log(res.data,'data')
+        dispatch({
+            type: "UPDATE",
+            payload: res.data
+        })
+    }
 }
 
 export const Search = (data) => {
