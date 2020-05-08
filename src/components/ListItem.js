@@ -1,45 +1,39 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import {connect} from 'react-redux';
-import { AddItem, Search, getItem, ChangeStatus,UpdateItem } from '../redux/action';
+import { Search, getItem, ChangeStatus, UpdateItem, DeleteItem, setLogin } from '../redux/action';
 class ListItem extends Component {
-
-    
     handleInputChange = (item) => {
          this.props.ChangeStatus(item)
-        if(this.refs[item.id + 'x'].style.textDecoration == 'line-through')
+        if(this.refs[item.id + 'x'].style.textDecoration === 'line-through')
         {
             this.refs[item.id + 'x'].style.textDecoration = 'none'
         }
         else
             this.refs[item.id + 'x'].style.textDecoration = 'line-through'
     }
-    componentDidMount = () => {
-        this.props.getItem();
-    }
     componentDidUpdate = () => {
-        // this.props.getItem();
         this.props.list.map(item => {
             if(item.status){
                 this.refs[item.id+'x'].style.textDecoration = 'line-through'
             }
         })
+     
     }
  
-
     handleClickEdit = (item) => {
         this.refs[item.id].style.display = 'inline-block'
         this.refs[item.id + 's'].style.display = 'none'
     }
     handleFocus = (e) => {
-        // console.log(e.target.value,"focus")
     }
     handleBlur = (item,e) => {
         this.props.UpdateItem(item,e.target.value)
         this.refs[item.id].style.display = 'none'
         this.refs[item.id + 's'].style.display = 'inline-block'
     }
-
+    handleDelete = (item) => {
+        this.props.DeleteItem(item);
+    }
     renderItem = () => {
         return this.props.list.map( item => {
         return (
@@ -56,6 +50,10 @@ class ListItem extends Component {
                         </div>
                         <div className="ui transparent input" ref={item.id + 's'} >
                             {item.title}
+                            <div style={{marginLeft:10}}>
+                                <i className="angle double left icon" onClick={()=>this.handleDelete(item)} >delete</i>
+                                <p>{this.renderEmail}</p>
+                            </div>
                         </div>
                     </div>
                     </label>
@@ -64,22 +62,64 @@ class ListItem extends Component {
         }
         )
     }
-   
-    
+    handleLogin = async () =>{
+       await this.GoogleAPI.signIn();
+        this.props.setLogin(this.GoogleAPI.isSignedIn.get());
+    }
+    handleLogout = async () =>{
+        await this.GoogleAPI.signOut();
+        this.props.setLogin(this.GoogleAPI.isSignedIn.get());
+    }
+  
+
+    componentDidMount = async () => {
+        // config google api
+            await window.gapi.load('client:auth2', ()=>{
+                 window.gapi.auth2.init({
+                            clientId: '94088473979-iumbu96ofgk0ekhkerockjbprfco86k5.apps.googleusercontent.com',
+                            scope: 'email'
+                        }).then(()=>{
+                            this.GoogleAPI = window.gapi.auth2.getAuthInstance();
+                            this.props.setLogin(this.GoogleAPI.isSignedIn.get());
+                        })
+            })
+            this.props.getItem();
+    }
+   renderButton =  () =>{
+       if(this.props.isLogin){
+           return (
+                <>
+                    <p>BAN DA DANG NHAP</p>
+                    <button className="ui button" onClick={() =>this.handleLogout()} ref="logout">Logout</button>
+                </>
+           )
+       }
+       else
+            return (
+                <>
+                    <p>BAN CHUA DANG NHAP</p>
+                    <button className="ui button" onClick={() =>this.handleLogin()}  ref="login">Login</button>
+                </>
+            )
+   }
+  
     render() {
         return (
             <div>
-                    {this.renderItem()}
+                {this.renderItem()}
                 <br />
-                <button className="ui button" ref="xxx">Click Here</button>
+                <div>
+                    {this.renderButton()}
+                </div>
             </div>
         )
     }
 }
 const mapStateToProps = (state) => {
     return {
+        isLogin: state.isLogin,
         list: Object.values(state.getItem)
     }
 }
 
-export default connect(mapStateToProps,{Search, getItem, ChangeStatus, UpdateItem})(ListItem);
+export default connect(mapStateToProps,{Search, getItem, ChangeStatus, UpdateItem, DeleteItem, setLogin})(ListItem);

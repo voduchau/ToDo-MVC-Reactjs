@@ -11,6 +11,8 @@ const getItem = (state = {},action) => {
             return {...state, [action.payload.id]: action.payload}
         case "UPDATE":
             return {...state, [action.payload.id]: action.payload}
+        case "DELETE":
+            return action.payload;
         default:
             return state;
     }
@@ -24,6 +26,16 @@ const getItem = (state = {},action) => {
 //             return state;
 //     }
 // }
+const isLogin = (state = false, action) =>{
+    switch (action.type){
+        case "LOGIN":
+            return true;
+        case "SETLOGIN":
+            return action.payload;
+        default:
+            return state;
+    }
+}
 const Search = (state = [], action) =>{
     switch (action.type){
         case "SEARCH":
@@ -36,5 +48,6 @@ const Search = (state = [], action) =>{
 
 export default combineReducers({
     Search,
-    getItem
+    getItem,
+    isLogin
 })

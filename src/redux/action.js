@@ -21,14 +21,34 @@ export const ChangeStatus = (item) => {
             payload: res.data
         })
     }
-   
+}
+
+export const Login = () => {
+    return {
+        type: "LOGIN"
+    }
+}
+export const setLogin = (data) => {
+    return {
+        type: "SETLOGIN",
+        payload: data
+    }
+}
+
+export const DeleteItem = (item) => {
+    return async (dispatch) => {
+        await axios.delete(`/listItems/${item.id}`)
+        const res2 = await axios.get(`/listItems/`)
+        dispatch({
+            type: "DELETE",
+            payload: res2.data
+        })
+    }
 }
 
 export const UpdateItem = (item,value) => {
-    console.log(value,"update trong action")
     return async (dispatch) => {
         const res = await axios.put(`/listItems/${item.id}`,{...item,title: value})
-        console.log(res.data,'data')
         dispatch({
             type: "UPDATE",
             payload: res.data
