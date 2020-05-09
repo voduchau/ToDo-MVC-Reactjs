@@ -1,6 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import { AddItem, Search } from '../redux/action';
+import { setLogin } from '../redux/action';
 class SearchBar extends React.Component {
 
     handleChange = (e) => {
@@ -9,9 +10,20 @@ class SearchBar extends React.Component {
     }
 
     handleSubmit = (e) => {
-        e.preventDefault();
-        this.props.AddItem(this.props.name);
+        console.log(this.props.isLogin,'vc')
+        if(this.props.isLogin){
+            console.log(this.props.currentUser,'ac')
+            this.props.AddItem(this.props.name,this.props.currentUser);
+        }
+        else {
+            this.props.AddItem(this.props.name);
+        }
+        
         this.props.Search("");
+        e.preventDefault();
+    }
+    componentDidMount = () => {
+        
     }
 
     render() {
@@ -31,7 +43,10 @@ class SearchBar extends React.Component {
     }
 }
 const mapStateToProps = (state) => {
+    console.log(state.currentUser,'is login')
     return {
+        currentUser: state.currentUser,
+        isLogin: state.isLogin,
         name: state.Search
     }
 }

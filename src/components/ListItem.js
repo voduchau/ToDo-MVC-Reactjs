@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import { Search, getItem, ChangeStatus, UpdateItem, DeleteItem, setLogin } from '../redux/action';
+import { Search, getItem, ChangeStatus, UpdateItem, DeleteItem, setLogin, Login } from '../redux/action';
 class ListItem extends Component {
     handleInputChange = (item) => {
          this.props.ChangeStatus(item)
@@ -17,7 +17,6 @@ class ListItem extends Component {
                 this.refs[item.id+'x'].style.textDecoration = 'line-through'
             }
         })
-     
     }
  
     handleClickEdit = (item) => {
@@ -33,6 +32,14 @@ class ListItem extends Component {
     }
     handleDelete = (item) => {
         this.props.DeleteItem(item);
+    }
+    renderUser = (item) => {
+        console.log(item.user,'item trog ủe')
+        if(item.user){
+            return (
+            <div>{item.user}</div>
+            )
+        }
     }
     renderItem = () => {
         return this.props.list.map( item => {
@@ -52,8 +59,10 @@ class ListItem extends Component {
                             {item.title}
                             <div style={{marginLeft:10}}>
                                 <i className="angle double left icon" onClick={()=>this.handleDelete(item)} >delete</i>
-                                <p>{this.renderEmail}</p>
                             </div>
+                        </div>
+                        <div>
+                            {this.renderUser(item)}
                         </div>
                     </div>
                     </label>
@@ -63,8 +72,9 @@ class ListItem extends Component {
         )
     }
     handleLogin = async () =>{
-       await this.GoogleAPI.signIn();
+        await this.GoogleAPI.signIn();
         this.props.setLogin(this.GoogleAPI.isSignedIn.get());
+        this.props.Login(this.GoogleAPI.currentUser.get().getBasicProfile());
     }
     handleLogout = async () =>{
         await this.GoogleAPI.signOut();
@@ -81,6 +91,9 @@ class ListItem extends Component {
                         }).then(()=>{
                             this.GoogleAPI = window.gapi.auth2.getAuthInstance();
                             this.props.setLogin(this.GoogleAPI.isSignedIn.get());
+                            if(this.GoogleAPI.isSignedIn.get()){
+                                this.props.Login(this.GoogleAPI.currentUser.get().getBasicProfile());
+                            }
                         })
             })
             this.props.getItem();
@@ -117,9 +130,10 @@ class ListItem extends Component {
 }
 const mapStateToProps = (state) => {
     return {
+        currentUser: state.currentUser,
         isLogin: state.isLogin,
         list: Object.values(state.getItem)
     }
 }
 
-export default connect(mapStateToProps,{Search, getItem, ChangeStatus, UpdateItem, DeleteItem, setLogin})(ListItem);
+export default connect(mapStateToProps,{Search, getItem, ChangeStatus, UpdateItem, DeleteItem, setLogin, Login})(ListItem);

@@ -4,7 +4,18 @@ export const getItem = () => async dispatch => {
     const res = await axios.get('/listItems')
     return dispatch({ type: 'LOAD', payload: res.data})
 }
-export const AddItem = (data) => {
+export const AddItem = (data,currentUser) => {
+    // console.log(currentUser,'currentUser')
+    if (currentUser){
+        return async (dispatch) => {
+            const res = await axios.post('/listItems',{ title: data, status: false, user: currentUser.name })
+            console.log(res.data,'aa')
+            dispatch ({
+                type: 'ADD',
+                payload: res.data
+            })
+        }
+    }
     return async (dispatch) => {
         const res = await axios.post('/listItems',{ title: data, status: false })
         dispatch ({
@@ -23,9 +34,13 @@ export const ChangeStatus = (item) => {
     }
 }
 
-export const Login = () => {
-    return {
-        type: "LOGIN"
+export const Login = (user) => {
+    return async (dispatch) => {
+        const res = await axios.post(`/users`,{name: user.getName(), email: user.getEmail()})
+        dispatch({
+            type: "LOGIN",
+            payload: res.data
+        })
     }
 }
 export const setLogin = (data) => {
