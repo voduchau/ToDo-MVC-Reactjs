@@ -58,7 +58,7 @@ class ListItem extends Component {
                         <div className="ui transparent input" ref={item.id + 's'} >
                             {item.title}
                             <div style={{marginLeft:10}}>
-                                <i className="angle double left icon" onClick={()=>this.handleDelete(item)} >delete</i>
+                                <i className="angle double left icon" onClick={()=>this.handleDelete(item)} ></i>
                             </div>
                         </div>
                         <div>
